@@ -15,6 +15,8 @@
   <body>
     <script src="sketch.js"></script>
 
+    <div id="pageContainer">
+
     <div id="titleWrapper" style="width:100%;max-width:720px;margin:6px auto;padding:6px;text-align:center;">
       <h1 style="margin:0;font-weight:600;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;">Q-Less Game</h1>
     </div>
@@ -94,7 +96,7 @@
           checkMsg.textContent = 'Please ensure all 12 dice have letters before checking.';
           return false;
         }
-        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi?letters=';
+        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi';
         const url = base + encodeURIComponent(letters);
         // open in new tab/window
         window.open(url, '_blank');
@@ -105,5 +107,7 @@
         openSolver();
       });
     </script>
+
+    </div><!-- /#pageContainer -->
   </body>
 </html>
