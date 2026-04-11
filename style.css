@@ -6,3 +6,77 @@ html, body {
 canvas {
   display: block;
 }
+
+/* Prevent overlap on very large viewports */
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure wrappers don't overlap canvas or each other on large pages */
+#titleWrapper,
+#resetWrapper,
+#controls,
+#checkWrapper {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 18px;
+}
+
+#checkWrapper {
+  margin-top: 24px; /* extra separation from canvas */
+}
+
+/* Make sure inputs/buttons in controls keep sensible widths on wide screens */
+#controls input,
+#controls button,
+#controls label {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure some space at the bottom of the page so content doesn't touch edge */
+body {
+  padding-bottom: 32px;
+}
+
+/* Bottom buttons: responsive, centered, wrap without overlapping */
+#checkWrapper {
+  width: 100%;
+  max-width: 720px;
+  margin: 18px auto;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-row a {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 16px;
+  box-sizing: border-box;
+  min-width: 120px;
+  text-align: center;
+}
+
+.btn-primary { background: #0077cc; color: #fff; }
+.btn-secondary { background: #444; color: #fff; }
+
+@media (max-width: 420px) {
+  .btn-row a { min-width: 100px; padding: 10px 12px; font-size: 15px; }
+}
