@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Q-Less Dice</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="libraries/p5.min.js"></script>
+    <script src="libraries/p5.sound.min.js"></script>
+  </head>
+
+  <body>
+    <script src="sketch.js"></script>
+
+    <div id="titleWrapper" style="width:100%;max-width:720px;margin:6px auto;padding:6px;text-align:center;">
+      <h1 style="margin:0;font-weight:600;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;">Q-Less Game</h1>
+    </div>
+
+    <br/>
+
+    <div id="resetWrapper" style="width:100%;max-width:720px;margin:8px auto;padding:6px;text-align:center;">
+      <button id="resetCanvasBtn" style="padding:8px 12px;font-size:16px;background:#f2f2f2;">Reset</button>
+    </div>
+
+    <div id="controls" style="width:100%;max-width:720px;margin:12px auto;padding:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <label for="diceInput" style="flex:1 1 320px;min-width:180px;white-space:normal;word-break:break-word;">Enter 12 letters (one per die):</label>
+      <input id="diceInput" type="text" maxlength="12" placeholder="e.g. ABCDEFGHIJKL" style="flex:2 1 300px;padding:8px;font-size:16px;" />
+      <button id="loadBtn" disabled style="padding:8px 12px;font-size:16px;">Load</button>
+      <div id="ctrlMsg" style="width:100%;color:#666;font-size:13px;margin-top:6px;white-space:normal;word-break:break-word;"></div>
+    </div>
+
+    <script>
+      // validate input to enable Load button only when exactly 12 letters
+      const input = document.getElementById('diceInput');
+      const loadBtn = document.getElementById('loadBtn');
+      const ctrlMsg = document.getElementById('ctrlMsg');
+
+      function validateInput() {
+        const val = (input.value || '').replace(/[^a-zA-Z]/g, '');
+        input.value = val.toUpperCase();
+        if (val.length === 12) {
+          loadBtn.disabled = false;
+          ctrlMsg.textContent = 'Ready to load 12 letters.';
+        } else {
+          loadBtn.disabled = true;
+          ctrlMsg.textContent = 'Please enter exactly 12 letters.';
+        }
+      }
+
+      input.addEventListener('input', validateInput);
+
+      loadBtn.addEventListener('click', () => {
+        const v = (input.value || '').replace(/[^A-Z]/g, '');
+        if (v.length !== 12) return;
+        // call global function provided by sketch.js
+        if (window.loadDiceFromString) {
+          const ok = window.loadDiceFromString(v);
+          ctrlMsg.textContent = ok ? 'Loaded letters onto dice.' : 'Failed to load dice.';
+        } else {
+          ctrlMsg.textContent = 'Game not initialized yet. Try again in a moment.';
+        }
+      });
+
+      const resetBtn = document.getElementById('resetCanvasBtn');
+      resetBtn.addEventListener('click', () => {
+        // reload the page to get a fresh set of dice
+        location.reload();
+      });
+
+      // initial message
+      ctrlMsg.textContent = 'Please enter exactly 12 letters.';
+    </script>
+
+    <div id="checkWrapper" style="width:100%;max-width:720px;margin:18px auto;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="display:flex;gap:12px;align-items:center;">
+        <a id="checkLink" href="#" style="display:inline-block;padding:10px 14px;background:#0077cc;color:#fff;border-radius:6px;text-decoration:none;font-size:16px;" target="_blank">Check solution</a>
+        <a id="dictLink" href="https://chaoaj.github.io/qless-solve/" style="display:inline-block;padding:10px 14px;background:#444;color:#fff;border-radius:6px;text-decoration:none;font-size:16px;" target="_blank">Dictionary</a>
+      </div>
+      <div id="checkMsg" style="color:#666;font-size:13px;margin-top:6px;white-space:normal;word-break:break-word;"></div>
+    </div>
+
+    <script>
+      const checkLink = document.getElementById('checkLink');
+      const checkMsg = document.getElementById('checkMsg');
+      function openSolver() {
+        // get letters from sketch
+        const letters = (window.getDiceLetters && window.getDiceLetters()) || '';
+        if (!letters || letters.length !== 12) {
+          checkMsg.textContent = 'Please ensure all 12 dice have letters before checking.';
+          return false;
+        }
+        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi?letters=';
+        const url = base + encodeURIComponent(letters);
+        // open in new tab/window
+        window.open(url, '_blank');
+        return true;
+      }
+      checkLink.addEventListener('click', function(e){
+        e.preventDefault();
+        openSolver();
+      });
+    </script>
+  </body>
+</html>
