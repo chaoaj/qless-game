@@ -36,6 +36,7 @@
         <a id="resetCanvasBtn" href="#" class="btn-secondary">Reset</a>
         <a id="checkLink" href="#" class="btn-primary">Check solution</a>
         <a id="dictLink" href="https://chaoaj.github.io/qless-solve/" class="btn-secondary" target="_blank">Dictionary</a>
+        <a id="cgiLink" href="#" class="btn-secondary">Original Solver</a>
       </div>
 
     </div>
@@ -110,9 +111,9 @@
           return false;
         }
 
-        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi?letters=';
-        const url = base + encodeURIComponent(letters);
-        // open in new tab/window
+        // open dictionary with letters query (same param as the CGI)
+        const dictBase = 'https://chaoaj.github.io/qless-solve/?letters=';
+        const url = dictBase + encodeURIComponent(letters);
         window.open(url, '_blank');
         return true;
       }
@@ -125,9 +126,32 @@
         });
       }
 
-      // dictLink is a normal anchor with target="_blank", no JS required
-      if (dictLink) {
-        dictLink.addEventListener('click', function(){ /* noop */ });
+      // wire the original CGI solver link as a separate button
+      const cgiLink = document.getElementById('cgiLink');
+      function openSolverCGI() {
+        let letters = '';
+        const input = document.getElementById('diceInput');
+        if (input) {
+          letters = (input.value || '').replace(/[^A-Z]/gi, '').toUpperCase();
+        }
+        if (!letters || letters.length !== 12) {
+          if (typeof window.getDiceLetters === 'function') {
+            const g = window.getDiceLetters() || '';
+            if (g && g.length === 12) letters = g;
+          }
+        }
+        if (!letters || letters.length !== 12) return false;
+        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi?letters=';
+        const url = base + encodeURIComponent(letters);
+        window.open(url, '_blank');
+        return true;
+      }
+
+      if (cgiLink) {
+        cgiLink.addEventListener('click', function(e){
+          e.preventDefault();
+          openSolverCGI();
+        });
       }
     </script>
 
