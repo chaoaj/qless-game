@@ -118,6 +118,36 @@
       }
     </script>
 
+    <script>
+      // Populate the `#diceInput` with the initial rolled dice letters when available.
+      (function(){
+        const inputEl = () => document.getElementById('diceInput');
+        const tryPopulate = () => {
+          if (typeof window.getDiceLetters !== 'function') return false;
+          const letters = window.getDiceLetters();
+          if (!letters || letters.length !== 12) return false;
+          const input = inputEl();
+          if (!input) return true; // nothing to do
+          input.value = letters;
+          // run validation to enable the Load button and show message
+          if (typeof validateInput === 'function') validateInput();
+          if (typeof window.enableDiceControls === 'function') window.enableDiceControls();
+          return true;
+        };
+
+        // poll briefly until the letters are ready (max ~2s)
+        let attempts = 0;
+        const maxAttempts = 40;
+        const id = setInterval(() => {
+          attempts++;
+          if (tryPopulate() || attempts >= maxAttempts) clearInterval(id);
+        }, 50);
+
+        // also try once on load
+        window.addEventListener('load', tryPopulate, {passive:true});
+      })();
+    </script>
+
     </div><!-- /#pageContainer -->
   </body>
 </html>
