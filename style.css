@@ -34,16 +34,11 @@ canvas {
 /* Ensure wrappers don't overlap canvas or each other on large pages */
 #titleWrapper,
 #resetWrapper,
-#controls,
-#checkWrapper {
+#controls {
   box-sizing: border-box;
   position: relative;
   z-index: 1;
   margin-bottom: 18px;
-}
-
-#checkWrapper {
-  margin-top: 24px; /* extra separation from canvas */
 }
 
 /* Make sure inputs/buttons in controls keep sensible widths on wide screens */
@@ -54,23 +49,23 @@ canvas {
   box-sizing: border-box;
 }
 
-/* Ensure some space at the bottom of the page so content doesn't touch edge */
+/* Ensure some space at the bottom of the page so content doesn't touch edge.
+   Increased to account for the fixed bottom button bar. */
 body {
   padding-bottom: 32px;
 }
 
-/* Bottom buttons: responsive, centered, wrap without overlapping */
+/* Bottom buttons: fixed at viewport bottom, centered and responsive. */
+/* Place the button bar in normal document flow so it sits below the form */
 #checkWrapper {
+  position: static;
   width: 100%;
-  max-width: 720px;
-  margin: 18px auto;
-  padding: 8px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
   box-sizing: border-box;
+  padding: 12px 8px;
+  background: transparent;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
 }
 
 .btn-row {
@@ -78,10 +73,17 @@ body {
   gap: 12px;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
   flex-wrap: wrap;
+  /* make the row occupy its own line inside the controls flex container */
+  flex-basis: 100%;
+  width: auto;
+  max-width: 720px;
+  margin: 12px auto 0;
 }
 
-.btn-row a {
+.btn-row a,
+.btn-row button {
   display: inline-block;
   padding: 10px 14px;
   border-radius: 6px;
@@ -90,11 +92,21 @@ body {
   box-sizing: border-box;
   min-width: 120px;
   text-align: center;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-primary { background: #0077cc; color: #fff; }
 .btn-secondary { background: #444; color: #fff; }
 
+/* Buttons take their natural size (no forced full-width) */
+.btn-row button,
+.btn-row a {
+  width: auto;
+  max-width: 240px;
+}
+
 @media (max-width: 420px) {
   .btn-row a { min-width: 100px; padding: 10px 12px; font-size: 15px; }
+  .btn-row { max-width: 320px; }
 }

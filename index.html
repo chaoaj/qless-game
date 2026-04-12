@@ -23,18 +23,23 @@
 
     <br/>
 
-    <div id="resetWrapper" style="width:100%;max-width:720px;margin:8px auto;padding:6px;text-align:center;">
-      <button id="resetCanvasBtn" style="padding:8px 12px;font-size:16px;background:#f2f2f2;">Reset</button>
-    </div>
-
+    <form id="diceForm">
     <div id="controls" style="width:100%;max-width:720px;margin:12px auto;padding:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <br/>
       <label for="diceInput" style="flex:1 1 320px;min-width:180px;white-space:normal;word-break:break-word;">Enter 12 letters (one per die):</label>
+      <br/>
       <input id="diceInput" type="text" maxlength="12" placeholder="e.g. ABCDEFGHIJKL" style="flex:2 1 300px;padding:8px;font-size:16px;" />
       <button id="loadBtn" disabled style="padding:8px 12px;font-size:16px;">Load</button>
       <div id="ctrlMsg" style="width:100%;color:#666;font-size:13px;margin-top:6px;white-space:normal;word-break:break-word;"></div>
       <br/>
+      <div class="btn-row">
+        <a id="resetCanvasBtn" href="#" class="btn-secondary">Reset</a>
+        <a id="checkLink" href="#" class="btn-primary">Check solution</a>
+        <a id="dictLink" href="https://chaoaj.github.io/qless-solve/" class="btn-secondary" target="_blank">Dictionary</a>
+      </div>
+
     </div>
+    </form>
 
     <script>
       // validate input to enable Load button only when exactly 12 letters
@@ -69,43 +74,48 @@
       });
 
       const resetBtn = document.getElementById('resetCanvasBtn');
-      resetBtn.addEventListener('click', () => {
-        // reload the page to get a fresh set of dice
-        location.reload();
-      });
+      if (resetBtn) {
+        resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          // reload the page to get a fresh set of dice
+          location.reload();
+        });
+      }
 
       // initial message
       ctrlMsg.textContent = 'Please enter exactly 12 letters.';
     </script>
 
-    <div id="checkWrapper" style="width:100%;max-width:720px;margin:18px auto;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <div class="btn-row">
-        <a id="checkLink" href="#" class="btn-primary" target="_blank">Check solution</a>
-        <a id="dictLink" href="https://chaoaj.github.io/qless-solve/" class="btn-secondary" target="_blank">Dictionary</a>
-      </div>
-      <div id="checkMsg" style="color:#666;font-size:13px;margin-top:6px;white-space:normal;word-break:break-word;"></div>
-    </div>
-
     <script>
       const checkLink = document.getElementById('checkLink');
+      const dictLink = document.getElementById('dictLink');
       const checkMsg = document.getElementById('checkMsg');
       function openSolver() {
         // get letters from sketch
         const letters = (window.getDiceLetters && window.getDiceLetters()) || '';
         if (!letters || letters.length !== 12) {
-          checkMsg.textContent = 'Please ensure all 12 dice have letters before checking.';
+          if (checkMsg) checkMsg.textContent = 'Please ensure all 12 dice have letters before checking.';
           return false;
         }
-        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi';
+        const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi?letters=';
         const url = base + encodeURIComponent(letters);
         // open in new tab/window
         window.open(url, '_blank');
         return true;
       }
-      checkLink.addEventListener('click', function(e){
-        e.preventDefault();
-        openSolver();
-      });
+
+      // wire the check link
+      if (checkLink) {
+        checkLink.addEventListener('click', function(e){
+          e.preventDefault();
+          openSolver();
+        });
+      }
+
+      // dictLink is a normal anchor with target="_blank", no JS required
+      if (dictLink) {
+        dictLink.addEventListener('click', function(){ /* noop */ });
+      }
     </script>
 
     </div><!-- /#pageContainer -->
