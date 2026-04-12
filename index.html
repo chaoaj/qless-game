@@ -91,12 +91,25 @@
       const dictLink = document.getElementById('dictLink');
       const checkMsg = document.getElementById('checkMsg');
       function openSolver() {
-        // get letters from sketch
-        const letters = (window.getDiceLetters && window.getDiceLetters()) || '';
+        // prefer letters from the form input so Check uses exactly what's shown to the user
+        let letters = '';
+        const input = document.getElementById('diceInput');
+        if (input) {
+          letters = (input.value || '').replace(/[^A-Z]/gi, '').toUpperCase();
+        }
+        // fallback to sketch-provided letters if the form isn't populated
+        if (!letters || letters.length !== 12) {
+          if (typeof window.getDiceLetters === 'function') {
+            const g = window.getDiceLetters() || '';
+            if (g && g.length === 12) letters = g;
+          }
+        }
+
         if (!letters || letters.length !== 12) {
           if (checkMsg) checkMsg.textContent = 'Please ensure all 12 dice have letters before checking.';
           return false;
         }
+
         const base = 'https://the-chaos.com/cgi-bin/qless-solver.cgi?letters=';
         const url = base + encodeURIComponent(letters);
         // open in new tab/window
