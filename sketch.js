@@ -229,9 +229,9 @@ function positionBelowControls() {
   function styleBlock(el, topPx) {
     if (!el) return;
     el.style.position = 'absolute';
-    // center horizontally in viewport using transform so buttons and title
-    // sit centered on large screens
-    el.style.left = '50%';
+    // center over grid center horizontally (gridLeft + gridWidth/2)
+    const centerX = Math.round(gridLeft + gridWidth / 2);
+    el.style.left = centerX + 'px';
     el.style.transform = 'translateX(-50%)';
     el.style.top = topPx + 'px';
     el.style.zIndex = 9999;
