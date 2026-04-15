@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Min-Heap Export</title>
+  <style>
+    body{font-family: Arial, Helvetica, sans-serif;display:flex;flex-direction:column;align-items:center;padding:20px}
+    canvas{border:1px solid #ddd}
+    button{margin-top:12px;padding:8px 12px;font-size:16px}
+  </style>
+</head>
+<body>
+  <h3>Min-Heap (final): 21,18,7,3,45,8 inserted in order</h3>
+  <canvas id="c" width="900" height="480"></canvas>
+  <div>
+    <button id="dl">Download PNG</button>
+    <small style="display:block;margin-top:6px;color:#666">If download doesn't start automatically, click the button.</small>
+  </div>
+
+  <script>
+    const arr = [3,7,8,21,45,18]; // final heap array
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0,0,W,H);
+
+      // draw edges and nodes
+      const marginX = 40;
+      const topY = 40;
+      const levelHeight = 90;
+
+      function pos(i){
+        const depth = Math.floor(Math.log2(i+1));
+        const levelStart = Math.pow(2,depth)-1;
+        const indexInLevel = i - levelStart;
+        const nodesInLevel = Math.pow(2,depth);
+        const levelWidth = W - marginX*2;
+        const x = marginX + (indexInLevel + 0.5) * (levelWidth / nodesInLevel);
+        const y = topY + depth * levelHeight;
+        return {x,y};
+      }
+
+      // draw connecting lines
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 2;
+      for(let i=0;i<arr.length;i++){
+        const left = 2*i+1, right = 2*i+2;
+        const p = pos(i);
+        if(left < arr.length){
+          const c = pos(left);
+          ctx.beginPath(); ctx.moveTo(p.x,p.y+18); ctx.lineTo(c.x,c.y-18); ctx.stroke();
+        }
+        if(right < arr.length){
+          const c = pos(right);
+          ctx.beginPath(); ctx.moveTo(p.x,p.y+18); ctx.lineTo(c.x,c.y-18); ctx.stroke();
+        }
+      }
+
+      // draw nodes
+      for(let i=0;i<arr.length;i++){
+        const p = pos(i);
+        ctx.beginPath(); ctx.fillStyle = '#0b6'; ctx.strokeStyle = '#067'; ctx.lineWidth = 2;
+        ctx.arc(p.x,p.y,20,0,Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#002'; ctx.font = 'bold 14px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(String(arr[i]), p.x, p.y);
+      }
+
+      // draw array representation at bottom
+      const boxW = 64, boxH = 34;
+      const startX = (W - (arr.length*boxW)) / 2;
+      const baseY = H - 70;
+      ctx.fillStyle = '#222'; ctx.font='14px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      for(let i=0;i<arr.length;i++){
+        const x = startX + i*boxW;
+        ctx.fillStyle = '#fff'; ctx.strokeStyle='#333'; ctx.lineWidth=1; ctx.fillRect(x,baseY,boxW-6,boxH);
+        ctx.strokeRect(x,baseY,boxW-6,boxH);
+        ctx.fillStyle='#000'; ctx.fillText(String(arr[i]), x + (boxW-6)/2, baseY + boxH/2);
+        ctx.fillStyle='#666'; ctx.font='11px Arial'; ctx.fillText(i, x + (boxW-6)/2, baseY + boxH - 6);
+        ctx.font='14px Arial';
+      }
+
+      // label
+      ctx.fillStyle='#000'; ctx.font='13px Arial'; ctx.textAlign='left'; ctx.fillText('Array representation (index below):', 20, baseY - 12);
+    }
+
+    draw();
+
+    function downloadPNG(){
+      const url = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url; a.download = 'min_heap.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    document.getElementById('dl').addEventListener('click', downloadPNG);
+
+    // try auto-download after short delay (user can cancel or click if blocked)
+    setTimeout(()=>{
+      try{ downloadPNG(); }catch(e){}
+    },700);
+  </script>
+</body>
+</html>

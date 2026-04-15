@@ -19,7 +19,9 @@ let cellSize, gridX0, gridY0;
 let draggingDie = null;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  // Limit canvas width to the page max (1100px) to avoid CSS scaling
+  // which can produce uneven tile widths on large screens.
+  createCanvas(min(windowWidth, 1100), windowHeight);
   textAlign(CENTER, CENTER);
   initGrid();
   initDice();
@@ -329,7 +331,7 @@ function touchEnded() {
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  resizeCanvas(min(windowWidth, 1100), windowHeight);
   initGrid();
   // update dice pixel positions
   for (let d of dice) d.updatePixelPos();

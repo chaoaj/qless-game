@@ -50,9 +50,18 @@ canvas {
 }
 
 /* Ensure some space at the bottom of the page so content doesn't touch edge.
-   Increased to account for the fixed bottom button bar. */
+   Increased to account for the bottom button bar and device safe-area. */
 body {
-  padding-bottom: 32px;
+  /* base padding plus iOS safe-area inset (home indicator) when available */
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  /* allow momentum scrolling on iOS when overflow occurs */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure page container also respects safe area so content can scroll above
+   the home indicator on iOS devices in portrait. */
+#pageContainer {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
 /* Bottom buttons: fixed at viewport bottom, centered and responsive. */
