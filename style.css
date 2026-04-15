@@ -136,3 +136,23 @@ body {
   .btn-row a { min-width: 100px; padding: 10px 12px; font-size: 15px; }
   .btn-row { max-width: 320px; }
 }
+
+/* Mobile spacing: ensure title and form have breathing room */
+@media (max-width: 900px), (hover: none) {
+  #titleWrapper {
+    margin-bottom: 18px;
+    padding-top: 8px;
+  }
+  #titleWrapper h1 {
+    margin-bottom: 8px;
+  }
+  #controls {
+    margin-top: 8px;
+    padding-top: 6px;
+    gap: 10px;
+  }
+  #controls label {
+    display: block;
+    margin-bottom: 8px;
+  }
+}
