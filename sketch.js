@@ -44,6 +44,13 @@ function initGrid() {
   // origin to center horizontally and position vertically near the top (small gap)
   gridX0 = Math.max(0, (width - cellSize * GRID) / 2);
   gridY0 = topOffset + 8;
+  // expose the grid width to CSS so title/buttons can match it
+  try {
+    const gridW = Math.round(cellSize * GRID);
+    document.documentElement.style.setProperty('--grid-width', gridW + 'px');
+  } catch (e) {
+    // ignore if document isn't available (e.g., headless)
+  }
 }
 
 function initDice() {
@@ -229,14 +236,17 @@ function positionBelowControls() {
   function styleBlock(el, topPx) {
     if (!el) return;
     el.style.position = 'absolute';
-    // center over grid center horizontally (gridLeft + gridWidth/2)
-    const centerX = Math.round(gridLeft + gridWidth / 2);
+    // center over the grid center: canvas left + gridX0 + half the grid width
+    const centerX = Math.round((canvasRect.left || 0) + (gridX0 || 0) + (gridWidth / 2));
     el.style.left = centerX + 'px';
     el.style.transform = 'translateX(-50%)';
     el.style.top = topPx + 'px';
     el.style.zIndex = 9999;
     el.style.width = gridWidth + 'px';
     el.style.maxWidth = gridWidth + 'px';
+    // override any CSS centering/margins so absolute placement matches grid
+    el.style.marginLeft = '0';
+    el.style.marginRight = '0';
     el.style.boxSizing = 'border-box';
     el.style.whiteSpace = 'normal';
     el.style.wordBreak = 'break-word';
