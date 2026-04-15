@@ -22,6 +22,14 @@ canvas {
   box-sizing: border-box;
 }
 
+/* Ensure controls remain above canvas so taps reach them on touch devices */
+#controls {
+  position: relative;
+  z-index: 10000;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  touch-action: manipulation;
+}
+
 /* Ensure canvas also respects the page max width if created outside container */
 canvas {
   max-width: 1100px;

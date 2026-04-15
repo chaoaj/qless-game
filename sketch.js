@@ -341,9 +341,17 @@ function mousePressed() {
 }
 
 function touchStarted() {
-  // prevent simulated mouse events doubling
-  mousePressed();
-  return false;
+  // Only handle touch events that start on the canvas. If the touch
+  // target is a DOM control (buttons/links), leave the event alone so
+  // the browser can handle clicks/taps normally (fixes iPad buttons).
+  const e = arguments[0];
+  if (e && e.target && e.target.tagName === 'CANVAS') {
+    // prevent simulated mouse events doubling for canvas interactions
+    mousePressed();
+    return false;
+  }
+  // let the event propagate for DOM elements
+  return true;
 }
 
 function mouseDragged() {
@@ -353,8 +361,12 @@ function mouseDragged() {
 }
 
 function touchMoved() {
-  mouseDragged();
-  return false;
+  const e = arguments[0];
+  if (e && e.target && e.target.tagName === 'CANVAS') {
+    mouseDragged();
+    return false;
+  }
+  return true;
 }
 
 function mouseReleased() {
@@ -365,8 +377,12 @@ function mouseReleased() {
 }
 
 function touchEnded() {
-  mouseReleased();
-  return false;
+  const e = arguments[0];
+  if (e && e.target && e.target.tagName === 'CANVAS') {
+    mouseReleased();
+    return false;
+  }
+  return true;
 }
 
 function windowResized() {
