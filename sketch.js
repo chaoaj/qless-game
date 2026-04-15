@@ -29,18 +29,20 @@ function setup() {
 
 function initGrid() {
   // compute cell size to fit a centered 10x10 grid with padding
-  let pad = min(windowWidth, windowHeight) * 0.06;
-  // place grid near the top of the page (form now below the grid)
+  // Use the actual canvas size (`width` and `height`) so the grid
+  // always fits inside the canvas (prevents off-screen tiles on large displays).
+  let pad = min(width, height) * 0.06;
+  // place grid near the top of the canvas (form now below the grid)
   let topOffset = pad;
-  // available space for grid
-  let availW = windowWidth - pad * 2;
-  let availH = windowHeight - topOffset - pad;
+  // available space for grid within the canvas
+  let availW = width - pad * 2;
+  let availH = height - topOffset - pad;
   availH = max(availH, 100);
   cellSize = floor(min(availW / GRID, availH / GRID));
   // ensure some minimum
   cellSize = max(cellSize, 24);
   // origin to center horizontally and position vertically near the top (small gap)
-  gridX0 = (width - cellSize * GRID) / 2;
+  gridX0 = Math.max(0, (width - cellSize * GRID) / 2);
   gridY0 = topOffset + 8;
 }
 
