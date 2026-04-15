@@ -229,7 +229,10 @@ function positionBelowControls() {
   function styleBlock(el, topPx) {
     if (!el) return;
     el.style.position = 'absolute';
-    el.style.left = gridLeft + 'px';
+    // center horizontally in viewport using transform so buttons and title
+    // sit centered on large screens
+    el.style.left = '50%';
+    el.style.transform = 'translateX(-50%)';
     el.style.top = topPx + 'px';
     el.style.zIndex = 9999;
     el.style.width = gridWidth + 'px';
@@ -252,6 +255,7 @@ function positionBelowControls() {
     el.style.boxSizing = '';
     el.style.whiteSpace = '';
     el.style.wordBreak = '';
+    el.style.transform = '';
     // keep any CSS padding
   }
 
