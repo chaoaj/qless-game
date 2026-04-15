@@ -220,7 +220,7 @@ function positionBelowControls() {
   const checkEl = document.getElementById('checkWrapper');
   const titleEl = document.getElementById('titleWrapper');
 
-  // helper to apply common styles
+  // helper to apply common styles when using absolute layout
   function styleBlock(el, topPx) {
     if (!el) return;
     el.style.position = 'absolute';
@@ -234,6 +234,27 @@ function positionBelowControls() {
     el.style.wordBreak = 'break-word';
     el.style.padding = el.style.padding || '8px';
   }
+
+  // helper to reset styles so element stays in normal document flow
+  function resetFlow(el) {
+    if (!el) return;
+    el.style.position = '';
+    el.style.left = '';
+    el.style.top = '';
+    el.style.zIndex = '';
+    el.style.width = '';
+    el.style.maxWidth = '';
+    el.style.boxSizing = '';
+    el.style.whiteSpace = '';
+    el.style.wordBreak = '';
+    // keep any CSS padding
+  }
+
+  // On touch devices or narrow viewports, keep controls in normal flow so
+  // the page can scroll to them (fixes iPad portrait where absolute
+  // positioned controls can be inaccessible).
+  const isTouch = (typeof navigator !== 'undefined') && (navigator.maxTouchPoints && navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
+  const useAbsolute = (typeof window !== 'undefined') && (windowWidth > 900) && !isTouch;
 
   let curTop = baseTop;
   // position title above the grid
@@ -260,18 +281,36 @@ function positionBelowControls() {
     }
   }
   if (controlsEl) {
-    styleBlock(controlsEl, curTop - 120); // place controls above reset/check, just under grid
-    // adjust by controls height so reset/check appear below
-    const crect = controlsEl.getBoundingClientRect();
-    curTop = Math.round(crect.bottom) + 12;
+    if (useAbsolute) {
+      styleBlock(controlsEl, curTop - 120); // place controls above reset/check, just under grid
+      // adjust by controls height so reset/check appear below
+      const crect = controlsEl.getBoundingClientRect();
+      curTop = Math.round(crect.bottom) + 12;
+    } else {
+      // leave in document flow so page can scroll to it
+      resetFlow(controlsEl);
+      // let curTop continue after its normal position
+      const crect = controlsEl.getBoundingClientRect();
+      curTop = Math.round(crect.bottom) + 12 + window.scrollY;
+    }
   }
   if (resetEl) {
-    styleBlock(resetEl, curTop);
-    const rrect = resetEl.getBoundingClientRect();
-    curTop = Math.round(rrect.bottom) + 12;
+    if (useAbsolute) {
+      styleBlock(resetEl, curTop);
+      const rrect = resetEl.getBoundingClientRect();
+      curTop = Math.round(rrect.bottom) + 12;
+    } else {
+      resetFlow(resetEl);
+      const rrect = resetEl.getBoundingClientRect();
+      curTop = Math.round(rrect.bottom) + 12 + window.scrollY;
+    }
   }
   if (checkEl) {
-    styleBlock(checkEl, curTop);
+    if (useAbsolute) {
+      styleBlock(checkEl, curTop);
+    } else {
+      resetFlow(checkEl);
+    }
   }
 }
 
