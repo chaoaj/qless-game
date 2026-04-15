@@ -212,10 +212,13 @@ function draw() {
 
 function positionBelowControls() {
   if (typeof document === 'undefined') return;
-  const baseTop = Math.round(gridY0 + GRID * cellSize + Math.max(12, height * 0.02) + 150); // add extra 150px gap
-  // align controls and wrappers with the grid's left edge and width to avoid cutoff
-  const gridLeft = Math.round(gridX0);
+  // compute the page coordinates for the grid by using the canvas DOM rect
+  const canvasEl = document.querySelector && document.querySelector('canvas');
+  const canvasRect = canvasEl ? canvasEl.getBoundingClientRect() : { left: 0, top: 0 };
+  const gridLeft = Math.round(canvasRect.left + gridX0);
+  const gridTop = Math.round(canvasRect.top + gridY0 + window.scrollY);
   const gridWidth = Math.round(cellSize * GRID);
+  const baseTop = Math.round(gridTop + GRID * cellSize + Math.max(12, height * 0.02) + 150); // add extra 150px gap
 
   const controlsEl = document.getElementById('controls');
   const resetEl = document.getElementById('resetWrapper');
@@ -259,32 +262,39 @@ function positionBelowControls() {
   const useAbsolute = (typeof window !== 'undefined') && (windowWidth > 900) && !isTouch;
 
   let curTop = baseTop;
-  // position title above the grid
+  // position title above the grid (absolute only on wide non-touch screens)
   if (titleEl) {
-    // compute a reasonable font size based on cellSize
     const titleSize = Math.max(18, Math.round(cellSize * 0.6));
-    titleEl.style.position = 'absolute';
-    titleEl.style.left = gridLeft + 'px';
-    // place slightly above grid
-    // place title so its bottom is 50px above the grid (35 + 15 extra)
-    const titleTop = Math.max(8, gridY0 - titleSize - 50);
-    titleEl.style.top = titleTop + 'px';
-    titleEl.style.width = gridWidth + 'px';
-    titleEl.style.maxWidth = gridWidth + 'px';
-    titleEl.style.boxSizing = 'border-box';
-    titleEl.style.textAlign = 'center';
-    titleEl.style.zIndex = 9999;
-    // style the h1 inside
     const h1 = titleEl.querySelector && titleEl.querySelector('h1');
-    if (h1) {
-      h1.style.margin = '0';
-      h1.style.fontSize = titleSize + 'px';
-      h1.style.lineHeight = '1';
+    if (useAbsolute) {
+      titleEl.style.position = 'absolute';
+      titleEl.style.left = gridLeft + 'px';
+      // place slightly above grid using canvas-relative coords
+      const titleTop = Math.max(8, canvasRect.top + gridY0 - titleSize - 50 + window.scrollY);
+      titleEl.style.top = titleTop + 'px';
+      titleEl.style.width = gridWidth + 'px';
+      titleEl.style.maxWidth = gridWidth + 'px';
+      titleEl.style.boxSizing = 'border-box';
+      titleEl.style.textAlign = 'center';
+      titleEl.style.zIndex = 9999;
+      if (h1) {
+        h1.style.margin = '0';
+        h1.style.fontSize = titleSize + 'px';
+        h1.style.lineHeight = '1';
+      }
+    } else {
+      // keep title in normal flow on mobile so form sits below it
+      resetFlow(titleEl);
+      if (h1) {
+        h1.style.margin = '0';
+        h1.style.fontSize = Math.max(18, Math.round(cellSize * 0.5)) + 'px';
+        h1.style.lineHeight = '1.1';
+      }
     }
   }
   if (controlsEl) {
     if (useAbsolute) {
-      styleBlock(controlsEl, curTop - 120); // place controls above reset/check, just under grid
+      styleBlock(controlsEl, baseTop - 120); // place controls above reset/check, just under grid
       // adjust by controls height so reset/check appear below
       const crect = controlsEl.getBoundingClientRect();
       curTop = Math.round(crect.bottom) + 12;
