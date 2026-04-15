@@ -7,6 +7,13 @@ canvas {
   display: block;
 }
 
+/* Ensure canvas sits behind page controls so buttons receive taps on iPad */
+canvas {
+  position: relative;
+  z-index: 0;
+  touch-action: none; /* allow our canvas touch handlers while not blocking DOM controls */
+}
+
 /* Prevent overlap on very large viewports */
 canvas {
   max-width: 100%;
@@ -21,6 +28,8 @@ canvas {
   padding: 0 16px;
   box-sizing: border-box;
 }
+
+#pageContainer { position: relative; z-index: 1; }
 
 /* Ensure controls remain above canvas so taps reach them on touch devices */
 #controls {
